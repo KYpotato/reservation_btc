@@ -27,12 +27,22 @@ function gen_address() {
   }
 }
 
-function send(){
-  timelock.broadcast_tx_by_restaurant(
-    document.getElementById('redeem_script').value,
-    document.getElementById('locktime').value,
-    document.getElementById('target_address').value,
-    document.getElementById('privkey_restaurant').value,
-
-  );
+async function send(){
+  try{
+    let result = await timelock.broadcast_tx_by_restaurant(
+      document.getElementById('redeem_script').value,
+      document.getElementById('locktime').value,
+      document.getElementById('target_address').value,
+      document.getElementById('privkey_restaurant').value,
+    );
+    if(result) {
+      document.getElementById('result').innerText = 'success';
+    }
+    else{
+      document.getElementById('result').innerText = 'error';
+    }
+  } catch(error) {
+    document.getElementById('result').innerText = 'error';
+    alert(error);
+  }
 }

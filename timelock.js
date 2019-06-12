@@ -113,7 +113,7 @@ exports.gen_timelock_address = function(pubkey_restaurant, lockTime, secret, pub
   
   // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
   // secret = gen_secret();
-  const redeemScript = gen_timelock_script(pubkey_customer, pubkey_restaurant, lockTime, secret);
+  const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), Buffer.from(pubkey_restaurant, 'hex'), lockTime, secret);
   // const { address } = bitcoin.payments.p2sh(
   //   {
   //     redeem: { output: redeemScript, network: settings.network }, 
@@ -156,7 +156,7 @@ exports.broadcast_tx_by_restaurant = async function(redeemScript, lockTime, targ
 
   return result;
 }
-exports.gen_timelock_tx_by_restaurant = function(redeemScript, lockTime, target_address, utxos, privkey) {
+function gen_timelock_tx_by_restaurant(redeemScript, lockTime, target_address, utxos, privkey) {
 
   var fee = 500;
   // var utxos = [{
@@ -166,7 +166,7 @@ exports.gen_timelock_tx_by_restaurant = function(redeemScript, lockTime, target_
   // }];
       
   var txb = new bitcoin.TransactionBuilder(network);
-  txb.setLockTime(lockTime);
+  txb.setLockTime(Number(lockTime));
 
   // input
   let total_balance = 0;
