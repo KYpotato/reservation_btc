@@ -133,7 +133,7 @@ function gen_address_from_redeem(redeemScript) {
     });
   return address;
 }
-exports.broadcast_tx_by_restaurant = function(redeemScript, lockTime, target_address, privkey) {
+exports.broadcast_tx_by_restaurant = async function(redeemScript, lockTime, target_address, privkey) {
   
   let result = false;
 
@@ -145,7 +145,7 @@ exports.broadcast_tx_by_restaurant = function(redeemScript, lockTime, target_add
   }
   // gen tx
   let rawtx = await gen_timelock_tx_by_restaurant(
-    redeemScript, 
+    Buffer.from(redeemScript, 'hex'), 
     lockTime,
     target_address, 
     utxos, 
@@ -219,7 +219,7 @@ exports.broadcast_tx_by_costomer = async function(redeemScript, secret, target_a
   }
   // gen tx
   let rawtx = await gen_timelock_tx_by_costomer(
-    redeemScript, 
+    Buffer.from(redeemScript, 'hex'), 
     Buffer.from(secret, 'hex'), 
     target_address, 
     utxos, 
