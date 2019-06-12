@@ -16,8 +16,9 @@ function utcNow() {
 }
 
 exports.gen_address_test = function(secret) {
-    let hash = bitcoin.crypto.hash256(secret);
+    let hash = bitcoin.crypto.hash256(Buffer.from(secret, 'hex'));
     let redeemScript = bitcoin.script.compile([
+        bitcoin.opcodes.OP_HASH256,
         hash,
         bitcoin.opcodes.OP_EQUAL
     ]);
@@ -32,15 +33,16 @@ exports.gen_address_test = function(secret) {
 
     return redeemScript;
 }
-exports.gen_tx_test = function(secret, redeemScript) {
+exports.gen_tx_test = function(secret_str, redeemScript) {
     
-    let hash = bitcoin.crypto.hash256(secret);
+    // let hash = bitcoin.crypto.hash256(Buffer.from(secret, 'hex'));
+    let secret = Buffer.from(secret_str, 'hex');
 
     var fee = 500;
     var utxos = [{
-        txid: "355b6b6ac82921ec1f251add4953bf2919ea1029f6a74881ae216efd3d51eaaf",
+        txid: "2a4725d5a09f0b89285527ffafbf0a7beac6c876438dd8fa35ba4e09dfdd195a",
         output_idx: 0,
-        value_satoshi: 16356,
+        value_satoshi: 10000,
     }];
     var target_address = "mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9";
         
@@ -63,7 +65,7 @@ exports.gen_tx_test = function(secret, redeemScript) {
     const redeemScriptSig = bitcoin.payments.p2sh({
         redeem: {
             input: bitcoin.script.compile([
-                hash
+                secret
             ]),
             output: redeemScript
         }
@@ -79,18 +81,18 @@ exports.gen_tx_test = function(secret, redeemScript) {
     return tx.toHex();
 }
 
-function gen_timelock_script (aQ, bQ, lockTime) {
+function gen_timelock_script (customer_pubkey, restaurante_pubkey, lockTime) {
     return bitcoin.script.compile([
         bitcoin.opcodes.OP_IF,
         // for restaurante
         bitcoin.script.number.encode(lockTime),
         bitcoin.opcodes.OP_CHECKLOCKTIMEVERIFY,
         bitcoin.opcodes.OP_DROP,
-        bQ.publicKey,
+        restaurante_pubkey.publicKey,
 
         bitcoin.opcodes.OP_ELSE,
         // for customers
-        aQ.publicKey,
+        customer_pubkey.publicKey,
         
         bitcoin.opcodes.OP_ENDIF,
 
