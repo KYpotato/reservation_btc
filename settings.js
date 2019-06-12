@@ -6,6 +6,6 @@ exports.API = {
 }
 
 exports.network = bitcoin.networks.testnet;
-exports.api = module.exports.API.MY_NODE;
+exports.api = module.exports.API.CHAIN_SO;
 
 exports.default_fee = 500;
