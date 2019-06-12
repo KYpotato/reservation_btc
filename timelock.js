@@ -81,17 +81,22 @@ exports.gen_tx_test = function(secret_str, redeemScript) {
     return tx.toHex();
 }
 
-function gen_timelock_script (customer_pubkey, restaurante_pubkey, lockTime) {
+function gen_timelock_script (customer_pubkey, restaurant_pubkey, lockTime, secret) {
+    let hash = bitcoin.crypto.hash256(Buffer.from(secret, 'hex'));
+
     return bitcoin.script.compile([
         bitcoin.opcodes.OP_IF,
-        // for restaurante
+        // for restaurant
         bitcoin.script.number.encode(lockTime),
         bitcoin.opcodes.OP_CHECKLOCKTIMEVERIFY,
         bitcoin.opcodes.OP_DROP,
-        restaurante_pubkey.publicKey,
+        restaurant_pubkey.publicKey,
 
         bitcoin.opcodes.OP_ELSE,
         // for customers
+        bitcoin.opcodes.OP_HASH256,
+        hash,
+        bitcoin.opcodes.OP_EQUALVERIFY,
         customer_pubkey.publicKey,
         
         bitcoin.opcodes.OP_ENDIF,
@@ -99,11 +104,17 @@ function gen_timelock_script (customer_pubkey, restaurante_pubkey, lockTime) {
         bitcoin.opcodes.OP_CHECKSIG
         ]);
 }
+
+function gen_secret() {
+    return "a";
+}
+
 exports.gen_timelock_address = function(){
 
     const lockTime = bip65.encode({ blocks: 1542530 });
     // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
-    const redeemScript = gen_timelock_script(alice, bob, lockTime);
+    let secret = gen_secret();
+    const redeemScript = gen_timelock_script(alice, bob, lockTime, secret);
     const { address } = bitcoin.payments.p2sh(
         {
             redeem: { output: redeemScript, network: settings.network }, 
@@ -114,7 +125,7 @@ exports.gen_timelock_address = function(){
 
     return {redeemScript, lockTime};
 }
-exports.gen_timelock_tx = function(redeemScript, lockTime) {
+exports.gen_timelock_tx_by_restaurant = function(redeemScript, lockTime) {
 
     var fee = 500;
     var utxos = [{
@@ -160,5 +171,53 @@ exports.gen_timelock_tx = function(redeemScript, lockTime) {
     console.log(tx.toHex());
 
     return tx.toHex();
+}
+exports.gen_timelock_tx_by_costomer = function(redeemScript, secret_org) {
+
+    var fee = 500;
+    var utxos = [{
+        txid: "9bd1e037cbca9def807aa2b02fc6bcd65cb52742487204207a2d8fd7e0682c85",
+        output_idx: 0,
+        value_satoshi: 15608,
+    }];
+    var target_address = "mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9";
+        
+    let secret = Buffer.from(secret_org, 'hex');
+    var txb = new bitcoin.TransactionBuilder(network);
+
+    // input
+    let total_balance = 0;
+    for(utxo of utxos){
+        txb.addInput(utxo.txid, utxo.output_idx);
+        total_balance += utxo.value_satoshi;
     }
+
+    // output
+    txb.addOutput(target_address, total_balance - fee);
+
+    // set unlocking script to tx
+    const tx = txb.buildIncomplete();
+    console.log(tx);
+    const signatureHash = tx.hashForSignature(0, redeemScript, hashType);
+
+    const redeemScriptSig = bitcoin.payments.p2sh({
+        redeem: {
+            input: bitcoin.script.compile([
+                bitcoin.script.signature.encode(alise.sign(signatureHash), hashType),
+                secret,
+                bitcoin.opcodes.OP_FALSE
+            ]),
+            output: redeemScript
+        }
+    }).input;
+
+    for(let i = 0; i < utxos.length; i++){
+        tx.setInputScript(i, redeemScriptSig);
+    }
+    console.log(tx);
+    console.log('tx:');
+    console.log(tx.toHex());
+
+    return tx.toHex();
+}
 
