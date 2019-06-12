@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script text="text/javascript" src="./restaurant.js"></script>
+  </head>
+  <body>
+    <h1>Reservation</h1>
+    Generate reservation address<br>
+    <table>
+      <tr>
+        <td>pubkey(restaurant)</td><td><textarea id="pubkey_restaurant" name="pubkey_restaurant" rows="1" cols="50"></textarea></td>
+      </tr>
+      <tr>
+        <td>locktime</td><td><textarea id="locktime" name="locktime" rows="1" cols="50"></textarea></td>
+      </tr>
+      <tr>
+        <td>secret</td><td><textarea id="secret" name="secret" rows="1" cols="50"></textarea></td>
+      </tr>
+      <tr>
+        <td>pubkey(customer)</td><td><textarea id="pubkey_customer" name="pubkey_customer" rows="1" cols="50"></textarea></td>
+      </tr>
+    </table>
+    <button type="button" onclick='gen_address()'>generate address</button><br>
+    <br>address: <label id="address"></label><br>
+    <br>redeem script: <label id="redeem_script"></label><br>
+    <img id="address_qr" src="" style="visibility:hidden">
+  </body>
+</html>
