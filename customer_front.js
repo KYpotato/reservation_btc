@@ -13,14 +13,14 @@ async function send() {
     )
 
     if(result) {
-      document.getElementById('result').innerText = result;
+      document.getElementById('result').innerText = 'success';
     }
     else {
       document.getElementById('result').innerText = 'error';
     }
   } catch(error) {
 
-    document.getElementById('result').innerText = '';
+    document.getElementById('result').innerText = 'error';
     alert(error);
   }
 }
