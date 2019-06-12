@@ -110,10 +110,6 @@ function gen_secret() {
 }
 
 exports.gen_timelock_address = function(pubkey_restaurant, lockTime, secret, pubkey_customer){
-
-  pubkey_restaurant = alice.publicKey;
-  pubkey_customer = bob.publicKey;
-  lockTime = bip65.encode({ blocks: 1542530 });
   
   // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
   // secret = gen_secret();
@@ -138,17 +134,36 @@ function gen_address_from_redeem(redeemScript) {
   return address;
 }
 exports.broadcast_tx_by_restaurant = function(redeemScript, lockTime, target_address, privkey) {
+  
+  let result = false;
 
+  // get utxos
+  let utxos = await commom_btc.get_utxos(gen_address_from_redeem(Buffer.from(redeemScript, 'hex')));
+  if(utxos.length < 1) {
+    alert("no balance");
+    return result;
+  }
+  // gen tx
+  let rawtx = await gen_timelock_tx_by_restaurant(
+    redeemScript, 
+    lockTime,
+    target_address, 
+    utxos, 
+    bitcoin.ECPair.fromWIF(privkey, settings.network)
+  );
+  // broadcast tx
+  result = await commom_btc.broadcast(rawtx);
+
+  return result;
 }
-exports.gen_timelock_tx_by_restaurant = function(redeemScript, lockTime) {
+exports.gen_timelock_tx_by_restaurant = function(redeemScript, lockTime, target_address, utxos, privkey) {
 
   var fee = 500;
-  var utxos = [{
-    txid: "9bd1e037cbca9def807aa2b02fc6bcd65cb52742487204207a2d8fd7e0682c85",
-    output_idx: 0,
-    value_satoshi: 15608,
-  }];
-  var target_address = "mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9";
+  // var utxos = [{
+  //   txid: "9bd1e037cbca9def807aa2b02fc6bcd65cb52742487204207a2d8fd7e0682c85",
+  //   output_idx: 0,
+  //   value_satoshi: 15608,
+  // }];
       
   var txb = new bitcoin.TransactionBuilder(network);
   txb.setLockTime(lockTime);
@@ -171,7 +186,7 @@ exports.gen_timelock_tx_by_restaurant = function(redeemScript, lockTime) {
   const redeemScriptSig = bitcoin.payments.p2sh({
     redeem: {
       input: bitcoin.script.compile([
-        bitcoin.script.signature.encode(bob.sign(signatureHash), hashType),
+        bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
         bitcoin.opcodes.OP_TRUE
       ]),
       output: redeemScript
@@ -187,10 +202,8 @@ exports.gen_timelock_tx_by_restaurant = function(redeemScript, lockTime) {
 
   return tx.toHex();
 }
-exports.broadcast_tx_by_costomer = async function(redeemScript, secret_org, target_address, privkey) {
-  target_address = "mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9";
-  privkey = alice;
-  let secret = Buffer.from(secret_org, 'hex');
+exports.broadcast_tx_by_costomer = async function(redeemScript, secret, target_address, privkey) {
+
   // var utxos = [{
   //   txid: "9bd1e037cbca9def807aa2b02fc6bcd65cb52742487204207a2d8fd7e0682c85",
   //   output_idx: 0,
@@ -204,9 +217,14 @@ exports.broadcast_tx_by_costomer = async function(redeemScript, secret_org, targ
     alert("no balance");
     return result;
   }
-  console.log(utxos.length);
   // gen tx
-  let rawtx = await gen_timelock_tx_by_costomer(redeemScript, secret, target_address, utxos, privkey);
+  let rawtx = await gen_timelock_tx_by_costomer(
+    redeemScript, 
+    Buffer.from(secret, 'hex'), 
+    target_address, 
+    utxos, 
+    bitcoin.ECPair.fromWIF(privkey, settings.network)
+  );
   // broadcast tx
   result = await commom_btc.broadcast(rawtx);
 

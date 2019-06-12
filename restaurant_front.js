@@ -1,6 +1,7 @@
 const timelock = require('./timelock');
 
 window.gen_address = gen_address;
+window.send = send;
 
 function gen_address() {
   try {
