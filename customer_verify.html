@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script text="text/javascript" src="./customer.js"></script>
+  </head>
+  <body>
+    <h1>Refund</h1>
+    Send BTC to your address<br>
+    <table>
+        <tr>      
+          <td>deposit address</td><td><textarea id="address" name="address" rows="1" cols="50">2NFTUZFwQGCzMmtLfhnsSCFNAmjvyyQo6EH</textarea></td>
+        </tr>
+      <tr>
+        <td>redeem script</td><td><textarea id="redeem_script" name="redeem_script" rows="5" cols="50">6303fa8917b17521038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e67aa205df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c94568821038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d768ac</textarea></td>
+      </tr>
+      <tr>
+        <td>your pubkey</td><td><textarea id="pubkey_customer" name="pubkey_customer" rows="1" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
+      </tr>
+    </table>
+    <button type="button" onclick='verify()'>verify address</button><br>
+    <br>result: <label id="result"></label><br>
+  </body>
+</html>

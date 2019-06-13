@@ -272,3 +272,111 @@ function gen_timelock_tx_by_costomer(redeemScript, secret, target_address, utxos
   return tx.toHex();
 }
 
+function vefiry_head_opcode(redeem, opcode){
+  var result = null;
+  console.log(redeem);
+  console.log(opcode);
+  console.log(opcode.toString(16));
+  if(0 == redeem.indexOf(opcode.toString(16).toUpperCase())){
+    result = redeem.substr(2, redeem.length - 2);
+  }
+  console.log(result);
+
+  return result;
+}
+
+function verify_redeem(redeemScript, pubkey) {
+  var result = true;
+  // OP_IF(0x63)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_IF)) == null) {
+    result = false;
+  }
+
+  // for restaurant
+  // lockTime (expect only 1byte)
+  var datalen = parseInt(redeemScript.substr(0, 2), 16);
+  redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
+  console.log(datalen);
+  console.log(redeemScript);
+
+  // OP_CHECKLOCKTIMEVERIFY(0xb1)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_CHECKLOCKTIMEVERIFY)) == null) {
+    result = false;
+  }
+
+  // OP_DROP(0x75)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_DROP)) == null) {
+    result = false;
+  }
+
+  // restaurant_pubkey (expect only 1byte)
+  datalen = parseInt(redeemScript.substr(0, 2), 16);
+  redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
+
+  // OP_ELSE(0x67)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_ELSE)) == null) {
+    result = false;
+  }
+  // for customers
+  // OP_HASH256(0xaa)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_HASH256)) == null) {
+    result = false;
+  }
+
+  // hash (expect only 1byte)
+  datalen = parseInt(redeemScript.substr(0, 2), 16);
+  redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
+
+  // OP_EQUALVERIFY(0x88)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_EQUALVERIFY)) == null) {
+    result = false;
+  }
+
+  // customer_pubkey (expect only 1byte)
+  datalen = parseInt(redeemScript.substr(0, 2), 16);
+  let pubkey_in_script = redeemScript.substr(2, datalen * 2);
+  if(pubkey_in_script != pubkey){
+    result = false;
+  }
+  redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
+  
+  // OP_ENDIF(0x68)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_ENDIF)) == null) {
+    result = false;
+  }
+
+  // OP_CHECKSIG(0xac)
+  if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_CHECKSIG)) == null) {
+    result = false;
+  }
+
+  return result;
+}
+
+exports.vefiry_address = function(address, redeemScript, pubkey_customer) {
+
+  var result = {result:false, message:''};
+  redeemScript = redeemScript.toUpperCase();
+  pubkey_customer = pubkey_customer.toUpperCase();
+
+  // vefiry redeem script
+  if(verify_redeem(redeemScript, pubkey_customer)){
+    result.result = true;
+
+    // verify address
+    let address_from_redeem = gen_address_from_redeem(Buffer.from(redeemScript, 'hex'));
+    if(address_from_redeem == address) {
+      result.result = true;
+    }
+    else{
+      result.result = false;
+      result.message = 'invalid address';
+    }
+  }
+  else{
+    result.result = false;
+    result.message = 'invalid redeem script';
+  }
+
+  return result;
+}
