@@ -4,22 +4,61 @@
     <meta charset="utf-8">
     <title></title>
     <script text="text/javascript" src="./customer.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   </head>
   <body>
-    <h1>Refund</h1>
-    Send BTC to your address<br>
-    <table>
-        <tr>      
-          <td>deposit address</td><td><textarea id="address" name="address" rows="1" cols="50">2NFTUZFwQGCzMmtLfhnsSCFNAmjvyyQo6EH</textarea></td>
+    <div class="container">
+      <h1 class="text-center banner">Customer page</h1>
+      <div class="card mb-3">
+      <div class="card-body">
+      <h2 class="card-title">2. Verify address</h2>
+      <table class="table">
+        <!-- <tr>      
+          <th>deposit address</th><td><textarea id="address" name="address" class="form-control" rows="1" cols="50">2NFTUZFwQGCzMmtLfhnsSCFNAmjvyyQo6EH</textarea></td>
         </tr>
+        <tr>
+          <th>redeem script</th><td><textarea id="redeem_script_1" name="redeem_script_1" class="form-control" rows="5" cols="50">6303fa8917b17521038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e67aa205df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c94568821038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d768ac</textarea></td>
+        </tr> -->
+        <tr>
+          <th>address & redeem script</th><td><textarea id="address_and_redeem" name="address_and_redeem" class="form-control" rows="5" cols="50">bitcoin:2MyzyZUiMNMkAfEMdpgyfHTtnyk3VHjmmnX?amount=0.0001&label=reservation&message=6303828917b17521038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e67aa20ff17a79eb254d440e5a77d1c7fc750fa062421582cfd60b1f263de72e2ca10258821038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d768ac</textarea></td>
+        </tr>
+        <tr>
+          <th>your pubkey</th><td><textarea id="pubkey_customer" name="pubkey_customer" class="form-control" rows="1" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
+        </tr>
+      </table>
+      <button type="button" class="btn btn-primary" onclick='verify()'>verify address</button><br>
+      <br>result: <label id="verified_result"></label><br>
+      <div id="div_deposit_address" style="visibility:hidden"><br>address: <label id="deposit_address"></label><br></div>
+      <div id="div_deposit_amount" style="visibility:hidden"><br>amount: <label id="deposit_amount"></label> BTC<br></div>
+      <img id="address_qr" src="" style="visibility:hidden">
+      </div>
+      </div>
+
+    <div class="card mb-3">
+    <div class="card-body">
+    <h2 class="card-title">3. Refund</h2>
+    Send BTC to your address<br>
+    <table class="table">
       <tr>
-        <td>redeem script</td><td><textarea id="redeem_script" name="redeem_script" rows="5" cols="50">6303fa8917b17521038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e67aa205df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c94568821038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d768ac</textarea></td>
+        <th>redeem script</th><td><textarea id="redeem_script_2" name="redeem_script_2" class="form-control" rows="5" cols="50">6303828917b17521038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e67aa205df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c94568821038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d768ac</textarea></td>
+      </tr>
+      <tr>      
+        <th>password</th><td><textarea id="secret" name="secret" class="form-control" rows="1" cols="50">a</textarea></td>
       </tr>
       <tr>
-        <td>your pubkey</td><td><textarea id="pubkey_customer" name="pubkey_customer" rows="1" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
+        <th>your address</th><td><textarea id="target_address" name="target_address" class="form-control" rows="1" cols="50">mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9</textarea></td>
+      </tr>
+      <tr>
+        <th>private key</th><td><textarea id="privkey_customer" name="privkey_customer" class="form-control" rows="1" cols="50">cMkopUXKWsEzAjfa1zApksGRwjVpJRB3831qM9W4gKZsLwjHXA9x</textarea></td>
       </tr>
     </table>
-    <button type="button" onclick='verify()'>verify address</button><br>
+    <button type="button" class="btn btn-primary" onclick='send()'>send BTC</button><br>
     <br>result: <label id="result"></label><br>
+    </div>
+    </div>
+  </div>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
 </html>

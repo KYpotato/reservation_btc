@@ -4,27 +4,67 @@
     <meta charset="utf-8">
     <title></title>
     <script text="text/javascript" src="./restaurant.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   </head>
   <body>
-    <h1>Reservation</h1>
-    Generate reservation address<br>
-    <table>
-      <tr>
-        <td>pubkey(restaurant)</td><td><textarea id="pubkey_restaurant" name="pubkey_restaurant" rows="2" cols="50">038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e</textarea></td>
-      </tr>
-      <tr>
-        <td>locktime</td><td><textarea id="locktime" name="locktime" rows="1" cols="50">1542530</textarea></td>
-      </tr>
-      <tr>
-        <td>password</td><td><textarea id="secret" name="secret" rows="1" cols="50">a</textarea></td>
-      </tr>
-      <tr>
-        <td>pubkey(customer)</td><td><textarea id="pubkey_customer" name="pubkey_customer" rows="2" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
-      </tr>
-    </table>
-    <button type="button" onclick='gen_address()'>generate address</button><br>
-    <br>address: <label id="address"></label><br>
-    <br>redeem script: <label id="redeem_script"></label><br>
-    <img id="address_qr" src="" style="visibility:hidden">
+    <div class="container">
+      <h1 class="text-center banner">Restaurant page</h1>
+      <div class="card mb-3">
+      <div class="card-body">
+      <h2 class="card-title">1. Generate reservation address</h2>
+      <!-- <div class="card-header">Generate reservation address</div> -->
+      <div class="table-responsive">
+        <table class="table">
+          <tr>
+            <th>pubkey(restaurant)</th><td><textarea id="pubkey_restaurant" name="pubkey_restaurant" class="form-control" rows="2" cols="50">038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e</textarea></td>
+          </tr>
+          <tr>
+            <th>locktime</th><td><textarea id="locktime_1" name="locktime_1" class="form-control" rows="1" cols="50">1542530</textarea></td>
+          </tr>
+          <tr>
+            <th>password</th><td><textarea id="secret" name="secret" class="form-control" rows="1" cols="50">a</textarea></td>
+          </tr>
+          <tr>
+            <th>deposit amount(BTC)</th><td><textarea id="deposit_amount" name="deposit_amount" class="form-control" rows="2" cols="50">0.0001</textarea></td>
+          </tr>
+          <tr>
+            <th>pubkey(customer)</th><td><textarea id="pubkey_customer" name="pubkey_customer" class="form-control" rows="2" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
+          </tr>
+        </table>
+      </div>
+      <button type="button" class="btn btn-primary" onclick='gen_address()'>generate address</button><br>
+      <br>address: <label id="generated_address"></label><br>
+      <br>address and redeem script: <br><span id="generated_redeem_script"></span><br>
+      <img id="address_qr" src="" style="visibility:hidden">
+      </div>
+      </div>
+      <div class="margin-top-3">
+        <div class="card mb-3">
+        <div class="card-body">
+        <h2 class="card-title">3. Collect deposit</h2>
+        <div class="table-responsive">
+          <table class="table">
+            <tr>
+              <th>redeem script</th><td><textarea id="redeem_script" name="redeem_script" class="form-control" rows="5" cols="50">6303828917b17521038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e67aa205df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c94568821038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d768ac</textarea></td>
+            </tr>
+            <tr>
+              <th>locktime</th><td><textarea id="locktime_2" name="locktime_2" class="form-control" rows="1" cols="50">1542530</textarea></td>
+            </tr>
+            <tr>
+              <th>private key</th><td><textarea id="privkey_restaurant" class="form-control" name="privkey_restaurant" rows="1" cols="50">cScfkGjbzzoeewVWmU2hYPUHeVGJRDdFt7WhmrVVGkxpmPP8BHWe</textarea></td>
+            </tr>
+            <tr>
+              <th>your address</th><td><textarea id="target_address" class="form-control" name="target_address" rows="1" cols="50">mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9</textarea></td>
+            </tr>
+          </table>
+          <button type="button" class="btn btn-primary" onclick='send()'>send BTC</button><br>
+          <br>result: <label id="result"></label><br>
+        </div>
+        </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
 </html>
