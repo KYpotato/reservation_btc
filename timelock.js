@@ -82,7 +82,7 @@ exports.gen_tx_test = function(secret_str, redeemScript) {
 }
 
 function gen_timelock_script (customer_pubkey, restaurant_pubkey, lockTime, secret) {
-  let hash = bitcoin.crypto.hash256(Buffer.from(secret, 'hex'));
+  let hash = bitcoin.crypto.hash256(Buffer.from(secret));
 
   return bitcoin.script.compile([
     bitcoin.opcodes.OP_IF,
@@ -220,7 +220,7 @@ exports.broadcast_tx_by_costomer = async function(redeemScript, secret, target_a
   // gen tx
   let rawtx = await gen_timelock_tx_by_costomer(
     Buffer.from(redeemScript, 'hex'), 
-    Buffer.from(secret, 'hex'), 
+    Buffer.from(secret), 
     target_address, 
     utxos, 
     bitcoin.ECPair.fromWIF(privkey, settings.network)
