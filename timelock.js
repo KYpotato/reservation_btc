@@ -133,9 +133,10 @@ function gen_address_from_redeem(redeemScript) {
     });
   return address;
 }
-exports.broadcast_tx_by_restaurant = async function(redeemScript, lockTime, target_address, privkey) {
+exports.broadcast_tx_by_restaurant = async function(redeemScript, target_address, privkey) {
   
   let result = false;
+  let lockTime = await commom_btc.get_block_height();
 
   // get utxos
   let utxos = await commom_btc.get_utxos(gen_address_from_redeem(Buffer.from(redeemScript, 'hex')));

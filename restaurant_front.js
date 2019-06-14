@@ -38,7 +38,6 @@ async function send(){
   try{
     let result = await timelock.broadcast_tx_by_restaurant(
       document.getElementById('redeem_script').value,
-      document.getElementById('locktime_2').value,
       document.getElementById('target_address').value,
       document.getElementById('privkey_restaurant').value,
     );
