@@ -149,7 +149,40 @@ exports.gen_script_address = function(script_string){
     return base58encode_script;
 }
 
-
+exports.get_block_height = async function() {
+    var block_height;
+    if(settings.api == settings.API.CHAIN_SO){
+        // chain.so
+        let target_network;
+        if(network == bitcoin.networks.bitcoin){
+            target_network = "BTC";
+        }
+        else{
+            target_network = "BTCTEST";
+        }
+        const url = 'https://chain.so/api/v2/get_info/' + target_network;
+        let request_op = {
+            url: url,
+            method: 'GET',
+            json: true
+        }
+        let responce = await rp(request_op).catch(e =>{
+            console.log('get block height fail: ' + e);
+            throw new Error('get block height fail: ' + e);
+        })
+        console.log(responce);
+        
+        if(responce != null && responce.status == "success"){
+            console.log(responce.data);
+            block_height = responce.data.blocks;
+        }
+        else{
+            console.log('error(get utxo): ' + (responce == null? 'responce null': responce.status));
+            throw new Error('error(get utxo)' + (responce == null? 'responce null': responce.status));
+        }
+    }
+    return block_height;
+}
 
 
 exports.btc_cli_command = async function(method, ...params){
