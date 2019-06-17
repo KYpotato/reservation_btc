@@ -6,7 +6,7 @@ window.send = send;
 function gen_address() {
   try {
     let {redeemScript, address} = timelock.gen_timelock_address(
-      document.getElementById('pubkey_restaurant').value,
+      document.getElementById('privkey_restaurant').value,
       document.getElementById('locktime_1').value,
       document.getElementById('secret').value,
       document.getElementById('pubkey_customer').value,

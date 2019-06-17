@@ -109,11 +109,12 @@ function gen_secret() {
   return "a";
 }
 
-exports.gen_timelock_address = function(pubkey_restaurant, lockTime, secret, pubkey_customer){
+exports.gen_timelock_address = function(privkey_restaurant, lockTime, secret, pubkey_customer){
   
   // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
   // secret = gen_secret();
-  const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), Buffer.from(pubkey_restaurant, 'hex'), lockTime, secret);
+  pubkey_restaurant = bitcoin.ECPair.fromWIF(privkey_restaurant, settings.network).publicKey;
+  const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), pubkey_restaurant, lockTime, secret);
   // const { address } = bitcoin.payments.p2sh(
   //   {
   //     redeem: { output: redeemScript, network: settings.network }, 
@@ -125,6 +126,7 @@ exports.gen_timelock_address = function(pubkey_restaurant, lockTime, secret, pub
 
   return {redeemScript, address};
 }
+
 function gen_address_from_redeem(redeemScript) {
   const { address } = bitcoin.payments.p2sh(
     {
@@ -182,19 +184,20 @@ function gen_timelock_tx_by_restaurant(redeemScript, lockTime, target_address, u
   // set unlocking script to tx
   const tx = txb.buildIncomplete();
   console.log(tx);
-  const signatureHash = tx.hashForSignature(0, redeemScript, hashType);
-
-  const redeemScriptSig = bitcoin.payments.p2sh({
-    redeem: {
-      input: bitcoin.script.compile([
-        bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
-        bitcoin.opcodes.OP_TRUE
-      ]),
-      output: redeemScript
-    }
-  }).input;
 
   for(let i = 0; i < utxos.length; i++){
+    const signatureHash = tx.hashForSignature(i, redeemScript, hashType);
+  
+    const redeemScriptSig = bitcoin.payments.p2sh({
+      redeem: {
+        input: bitcoin.script.compile([
+          bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
+          bitcoin.opcodes.OP_TRUE
+        ]),
+        output: redeemScript
+      }
+    }).input;
+
     tx.setInputScript(i, redeemScriptSig);
   }
   console.log(tx);
@@ -250,20 +253,20 @@ function gen_timelock_tx_by_costomer(redeemScript, secret, target_address, utxos
   // set unlocking script to tx
   const tx = txb.buildIncomplete();
   console.log(tx);
-  const signatureHash = tx.hashForSignature(0, redeemScript, hashType);
-
-  const redeemScriptSig = bitcoin.payments.p2sh({
-    redeem: {
-      input: bitcoin.script.compile([
-        bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
-        secret,
-        bitcoin.opcodes.OP_FALSE
-      ]),
-      output: redeemScript
-    }
-  }).input;
 
   for(let i = 0; i < utxos.length; i++){
+    const signatureHash = tx.hashForSignature(i, redeemScript, hashType);
+  
+    const redeemScriptSig = bitcoin.payments.p2sh({
+      redeem: {
+        input: bitcoin.script.compile([
+          bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
+          secret,
+          bitcoin.opcodes.OP_FALSE
+        ]),
+        output: redeemScript
+      }
+    }).input;
     tx.setInputScript(i, redeemScriptSig);
   }
   console.log(tx);
@@ -354,11 +357,11 @@ function verify_redeem(redeemScript, pubkey) {
   return result;
 }
 
-exports.vefiry_address = function(address, redeemScript, pubkey_customer) {
+exports.vefiry_address = function(address, redeemScript, privkey_customer) {
 
   var result = {result:false, message:''};
   redeemScript = redeemScript.toUpperCase();
-  pubkey_customer = pubkey_customer.toUpperCase();
+  pubkey_customer = bitcoin.ECPair.fromWIF(privkey_customer, settings.network).publicKey.toString('hex').toUpperCase();
 
   // vefiry redeem script
   if(verify_redeem(redeemScript, pubkey_customer)){

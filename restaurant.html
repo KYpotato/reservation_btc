@@ -11,14 +11,27 @@
     <div class="container">
       <h1 class="text-center banner">Restaurant page</h1>
       <div class="card mb-3">
+        <div class="card-body">
+          <h2 class="card-title">0. Setting</h2>
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <th>your private key</th><td><textarea id="privkey_restaurant" name="privkey_restaurant" class="form-control">cScfkGjbzzoeewVWmU2hYPUHeVGJRDdFt7WhmrVVGkxpmPP8BHWe</textarea></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
       <div class="card-body">
       <h2 class="card-title">1. Generate reservation address</h2>
       <!-- <div class="card-header">Generate reservation address</div> -->
       <div class="table-responsive">
         <table class="table">
-          <tr>
+          <!-- <tr>
             <th>pubkey(restaurant)</th><td><textarea id="pubkey_restaurant" name="pubkey_restaurant" class="form-control" rows="2" cols="50">038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e</textarea></td>
-          </tr>
+          </tr> -->
           <tr>
             <th>locktime</th><td><textarea id="locktime_1" name="locktime_1" class="form-control" rows="1" cols="50">1542530</textarea></td>
           </tr>
@@ -29,7 +42,7 @@
             <th>deposit amount(BTC)</th><td><textarea id="deposit_amount" name="deposit_amount" class="form-control" rows="2" cols="50">0.0001</textarea></td>
           </tr>
           <tr>
-            <th>pubkey(customer)</th><td><textarea id="pubkey_customer" name="pubkey_customer" class="form-control" rows="2" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
+            <th>customer's pubkey</th><td><textarea id="pubkey_customer" name="pubkey_customer" class="form-control" rows="2" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
           </tr>
         </table>
       </div>
@@ -51,9 +64,9 @@
             <!-- <tr>
               <th>locktime</th><td><textarea id="locktime_2" name="locktime_2" class="form-control" rows="1" cols="50">1542530</textarea></td>
             </tr> -->
-            <tr>
+            <!-- <tr>
               <th>private key</th><td><textarea id="privkey_restaurant" class="form-control" name="privkey_restaurant" rows="1" cols="50">cScfkGjbzzoeewVWmU2hYPUHeVGJRDdFt7WhmrVVGkxpmPP8BHWe</textarea></td>
-            </tr>
+            </tr> -->
             <tr>
               <th>your address</th><td><textarea id="target_address" class="form-control" name="target_address" rows="1" cols="50">mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9</textarea></td>
             </tr>

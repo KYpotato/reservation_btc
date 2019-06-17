@@ -11,6 +11,19 @@
     <div class="container">
       <h1 class="text-center banner">Customer page</h1>
       <div class="card mb-3">
+        <div class="card-body">
+          <h2 class="card-title">0. Setting</h2>
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+                <th>your private key</th><td><textarea id="privkey_customer" name="privkey_customer" class="form-control">cMkopUXKWsEzAjfa1zApksGRwjVpJRB3831qM9W4gKZsLwjHXA9x</textarea></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
       <div class="card-body">
       <h2 class="card-title">2. Verify address</h2>
       <table class="table">
@@ -23,9 +36,9 @@
         <tr>
           <th>address & redeem script</th><td><textarea id="address_and_redeem" name="address_and_redeem" class="form-control" rows="5" cols="50">bitcoin:2MyzyZUiMNMkAfEMdpgyfHTtnyk3VHjmmnX?amount=0.0001&label=reservation&message=6303828917b17521038ea27103fb646a2cea9eca9080737e0b23640caaaef2853416c9b286b353313e67aa20ff17a79eb254d440e5a77d1c7fc750fa062421582cfd60b1f263de72e2ca10258821038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d768ac</textarea></td>
         </tr>
-        <tr>
+        <!-- <tr>
           <th>your pubkey</th><td><textarea id="pubkey_customer" name="pubkey_customer" class="form-control" rows="1" cols="50">038f0248cc0bebc425eb55af1689a59f88119c69430a860c6a05f340e445c417d7</textarea></td>
-        </tr>
+        </tr> -->
       </table>
       <button type="button" class="btn btn-primary" onclick='verify()'>verify address</button><br>
       <br>result: <label id="verified_result"></label><br>
@@ -49,9 +62,9 @@
       <tr>
         <th>your address</th><td><textarea id="target_address" name="target_address" class="form-control" rows="1" cols="50">mruTKiYbY3ZUV7VCFEfuqd9ZLV4ZhprqZ9</textarea></td>
       </tr>
-      <tr>
+      <!-- <tr>
         <th>private key</th><td><textarea id="privkey_customer" name="privkey_customer" class="form-control" rows="1" cols="50">cMkopUXKWsEzAjfa1zApksGRwjVpJRB3831qM9W4gKZsLwjHXA9x</textarea></td>
-      </tr>
+      </tr> -->
     </table>
     <button type="button" class="btn btn-primary" onclick='send()'>send BTC</button><br>
     <br>result: <label id="result"></label><br>
