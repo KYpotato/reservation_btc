@@ -5,9 +5,10 @@ window.send = send;
 
 function gen_address() {
   try {
+    let locktime = new Date(document.getElementById('locktime_1').value);
     let {redeemScript, address} = timelock.gen_timelock_address(
       document.getElementById('privkey_restaurant').value,
-      document.getElementById('locktime_1').value,
+      Math.floor(locktime.getTime() / 1000),
       document.getElementById('secret').value,
       document.getElementById('pubkey_customer').value,
     );
