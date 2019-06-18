@@ -39,7 +39,7 @@ async function verify() {
     let result = await timelock.vefiry_address(
       address,
       redeem,
-      document.getElementById('pubkey_customer').value
+      document.getElementById('privkey_customer').value
     )
 
     if(result.result) {

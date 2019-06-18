@@ -2,7 +2,7 @@ const bitcoin = require('bitcoinjs-lib');
 const base58check = require('base58check');
 const request = require('request');
 const rp = require('request-promise');
-const rpc_settings = require('./rpc_settings');
+// const rpc_settings = require('./rpc_settings');
 const settings = require('./settings');
 
 const network = settings.network;

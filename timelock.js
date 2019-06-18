@@ -109,22 +109,21 @@ function gen_secret() {
   return "a";
 }
 
-exports.gen_timelock_address = function(pubkey_restaurant, lockTime, secret, pubkey_customer){
+exports.gen_timelock_address = function(privkey_restaurant, lockTime, secret, pubkey_customer){
   
   // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
   // secret = gen_secret();
-  const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), Buffer.from(pubkey_restaurant, 'hex'), lockTime, secret);
-  // const { address } = bitcoin.payments.p2sh(
-  //   {
-  //     redeem: { output: redeemScript, network: settings.network }, 
-  //     network: settings.network 
-  //   });
+  pubkey_restaurant = bitcoin.ECPair.fromWIF(privkey_restaurant, settings.network).publicKey;
+  lockTime = bip65.encode({utc: lockTime});
+  const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), pubkey_restaurant, lockTime, secret);
+
   let address = gen_address_from_redeem(redeemScript);
   console.log(redeemScript);
   console.log('address', address);
 
   return {redeemScript, address};
 }
+
 function gen_address_from_redeem(redeemScript) {
   const { address } = bitcoin.payments.p2sh(
     {
@@ -136,7 +135,11 @@ function gen_address_from_redeem(redeemScript) {
 exports.broadcast_tx_by_restaurant = async function(redeemScript, target_address, privkey) {
   
   let result = false;
-  let lockTime = await commom_btc.get_block_height();
+  // let lockTime = await commom_btc.get_block_height();
+  // let lockTime = bip65.encode({utc: Math.floor(new Date("2019-06-17").getTime() / 1000)});
+  let result_redeem = verify_redeem(redeemScript);
+  let lockTime = parseInt(result_redeem.lockTime, 16);
+  console.log(lockTime);
 
   // get utxos
   let utxos = await commom_btc.get_utxos(gen_address_from_redeem(Buffer.from(redeemScript, 'hex')));
@@ -157,14 +160,10 @@ exports.broadcast_tx_by_restaurant = async function(redeemScript, target_address
 
   return result;
 }
+
 function gen_timelock_tx_by_restaurant(redeemScript, lockTime, target_address, utxos, privkey) {
 
   var fee = 500;
-  // var utxos = [{
-  //   txid: "9bd1e037cbca9def807aa2b02fc6bcd65cb52742487204207a2d8fd7e0682c85",
-  //   output_idx: 0,
-  //   value_satoshi: 15608,
-  // }];
       
   var txb = new bitcoin.TransactionBuilder(network);
   txb.setLockTime(Number(lockTime));
@@ -182,19 +181,20 @@ function gen_timelock_tx_by_restaurant(redeemScript, lockTime, target_address, u
   // set unlocking script to tx
   const tx = txb.buildIncomplete();
   console.log(tx);
-  const signatureHash = tx.hashForSignature(0, redeemScript, hashType);
-
-  const redeemScriptSig = bitcoin.payments.p2sh({
-    redeem: {
-      input: bitcoin.script.compile([
-        bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
-        bitcoin.opcodes.OP_TRUE
-      ]),
-      output: redeemScript
-    }
-  }).input;
 
   for(let i = 0; i < utxos.length; i++){
+    const signatureHash = tx.hashForSignature(i, redeemScript, hashType);
+  
+    const redeemScriptSig = bitcoin.payments.p2sh({
+      redeem: {
+        input: bitcoin.script.compile([
+          bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
+          bitcoin.opcodes.OP_TRUE
+        ]),
+        output: redeemScript
+      }
+    }).input;
+
     tx.setInputScript(i, redeemScriptSig);
   }
   console.log(tx);
@@ -203,13 +203,9 @@ function gen_timelock_tx_by_restaurant(redeemScript, lockTime, target_address, u
 
   return tx.toHex();
 }
+
 exports.broadcast_tx_by_costomer = async function(redeemScript, secret, target_address, privkey) {
 
-  // var utxos = [{
-  //   txid: "9bd1e037cbca9def807aa2b02fc6bcd65cb52742487204207a2d8fd7e0682c85",
-  //   output_idx: 0,
-  //   value_satoshi: 15608,
-  // }];
   let result = false;
 
   // get utxos
@@ -250,20 +246,20 @@ function gen_timelock_tx_by_costomer(redeemScript, secret, target_address, utxos
   // set unlocking script to tx
   const tx = txb.buildIncomplete();
   console.log(tx);
-  const signatureHash = tx.hashForSignature(0, redeemScript, hashType);
-
-  const redeemScriptSig = bitcoin.payments.p2sh({
-    redeem: {
-      input: bitcoin.script.compile([
-        bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
-        secret,
-        bitcoin.opcodes.OP_FALSE
-      ]),
-      output: redeemScript
-    }
-  }).input;
 
   for(let i = 0; i < utxos.length; i++){
+    const signatureHash = tx.hashForSignature(i, redeemScript, hashType);
+  
+    const redeemScriptSig = bitcoin.payments.p2sh({
+      redeem: {
+        input: bitcoin.script.compile([
+          bitcoin.script.signature.encode(privkey.sign(signatureHash), hashType),
+          secret,
+          bitcoin.opcodes.OP_FALSE
+        ]),
+        output: redeemScript
+      }
+    }).input;
     tx.setInputScript(i, redeemScriptSig);
   }
   console.log(tx);
@@ -286,82 +282,85 @@ function vefiry_head_opcode(redeem, opcode){
   return result;
 }
 
-function verify_redeem(redeemScript, pubkey) {
-  var result = true;
+function verify_redeem(redeemScript) {
+  var result = {result:true, lockTime:'', pubkey:''};
+  redeemScript = redeemScript.toUpperCase();
   // OP_IF(0x63)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_IF)) == null) {
-    result = false;
+    result.result = false;
   }
 
   // for restaurant
-  // lockTime (expect only 1byte)
+  // lockTime (datalen is expected only 1byte)
   var datalen = parseInt(redeemScript.substr(0, 2), 16);
+  let lockTime_tmp = redeemScript.substr(2, datalen * 2);
+  for(var i = 0; i < lockTime_tmp.length / 2; i++) {
+    result.lockTime += lockTime_tmp.substr(lockTime_tmp.length - 2 - i * 2, 2);
+  }
   redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
   console.log(datalen);
   console.log(redeemScript);
 
   // OP_CHECKLOCKTIMEVERIFY(0xb1)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_CHECKLOCKTIMEVERIFY)) == null) {
-    result = false;
+    result.result = false;
   }
 
   // OP_DROP(0x75)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_DROP)) == null) {
-    result = false;
+    result.result = false;
   }
 
-  // restaurant_pubkey (expect only 1byte)
+  // restaurant_pubkey (datalen is expected only 1byte)
   datalen = parseInt(redeemScript.substr(0, 2), 16);
   redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
 
   // OP_ELSE(0x67)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_ELSE)) == null) {
-    result = false;
+    result.result = false;
   }
   // for customers
   // OP_HASH256(0xaa)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_HASH256)) == null) {
-    result = false;
+    result.result = false;
   }
 
-  // hash (expect only 1byte)
+  // hash (datalen is expected only 1byte)
   datalen = parseInt(redeemScript.substr(0, 2), 16);
   redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
 
   // OP_EQUALVERIFY(0x88)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_EQUALVERIFY)) == null) {
-    result = false;
+    result.result = false;
   }
 
-  // customer_pubkey (expect only 1byte)
+  // customer_pubkey (datalen is expected only 1byte)
   datalen = parseInt(redeemScript.substr(0, 2), 16);
-  let pubkey_in_script = redeemScript.substr(2, datalen * 2);
-  if(pubkey_in_script != pubkey){
-    result = false;
-  }
+  result.pubkey = redeemScript.substr(2, datalen * 2);
   redeemScript = redeemScript.substr(2 + datalen * 2, redeemScript.length - (2 + datalen * 2));
   
   // OP_ENDIF(0x68)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_ENDIF)) == null) {
-    result = false;
+    result.result = false;
   }
 
   // OP_CHECKSIG(0xac)
   if((redeemScript = vefiry_head_opcode(redeemScript, bitcoin.opcodes.OP_CHECKSIG)) == null) {
-    result = false;
+    result.result = false;
   }
 
   return result;
 }
 
-exports.vefiry_address = function(address, redeemScript, pubkey_customer) {
+exports.vefiry_address = function(address, redeemScript, privkey_customer) {
 
   var result = {result:false, message:''};
-  redeemScript = redeemScript.toUpperCase();
-  pubkey_customer = pubkey_customer.toUpperCase();
+  pubkey_customer = bitcoin.ECPair.fromWIF(privkey_customer, settings.network).publicKey.toString('hex').toUpperCase();
 
   // vefiry redeem script
-  if(verify_redeem(redeemScript, pubkey_customer)){
+
+  let result_redeem = verify_redeem(redeemScript);
+  if(result_redeem.result == true && result_redeem.pubkey == pubkey){
     result.result = true;
 
     // verify address
