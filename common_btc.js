@@ -45,9 +45,9 @@ exports.get_utxos = async function(address){
       }
     }
     else{
-    ret_utxos = null;
-    console.log('error(get utxo): ' + responce.statusCode);
-    throw new Error('error(get utxo): ' + responce.statusCode);
+      ret_utxos = null;
+      console.log('error(get utxo): ' + (responce == null? 'responce null': responce.status));
+      throw new Error('error(get utxo)' + (responce == null? 'responce null': responce.status));
     }
   }
   else if(settings.api == settings.API.MY_NODE){
@@ -215,16 +215,36 @@ exports.get_block_height = async function() {
       block_height = responce.data.blocks;
     }
     else{
+      block_height = -1;
       console.log('error(get utxo): ' + (responce == null? 'responce null': responce.status));
       throw new Error('error(get utxo)' + (responce == null? 'responce null': responce.status));
     }
   }
+  else if(settings.api == settings.API.MY_NODE){
+    // bitcoind
+    console.log('bitcoin node');
+    let responce = await module.exports.btc_cli_command('getblockchaininfo');
+    console.log('responce');
+    console.log(responce);
+
+    if(responce.error == null){
+      block_height = responce.result.blocks;;
+    }
+    else{
+      block_height = -1;
+    }
+  }
+  else{
+    console.log('not applicable API server.');
+    throw new Error('not applicable API server.')
+  }
+
   return block_height;
 }
 
 
 exports.btc_cli_command = async function(method, ...params){
-  let ret = await dispatch(settings.rpcip, settings.rpcport, settings.username, settings.rpspassword, method, ...params).catch((err) => console.log(err));
+  let ret = await dispatch(rpc_settings.rpcip, rpc_settings.rpcport, rpc_settings.username, rpc_settings.rpspassword, method, ...params).catch((err) => console.log(err));
   if(ret.result != null){
     console.log('result');
     console.log(ret.result);
