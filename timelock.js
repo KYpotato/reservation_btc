@@ -1,5 +1,6 @@
 const bip68 = require('bip68');
 const bip65 = require('bip65');
+const bip32 = require('bip32');
 const bitcoin = require('bitcoinjs-lib');
 const base58check = require('base58check');
 const commom_btc = require('./common_btc');
@@ -113,7 +114,7 @@ exports.gen_timelock_address = function(privkey_restaurant, lockTime, secret, pu
   
   // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
   // secret = gen_secret();
-  pubkey_restaurant = bitcoin.ECPair.fromWIF(privkey_restaurant, settings.network).publicKey;
+  pubkey_restaurant = bitcoin.ECPair.fromPrivateKey(bip32.fromBase58(privkey_restaurant, settings.network).privateKey, settings.network).publicKey;
   lockTime = bip65.encode({utc: lockTime});
   const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), pubkey_restaurant, lockTime, secret);
 
@@ -153,7 +154,7 @@ exports.broadcast_tx_by_restaurant = async function(redeemScript, target_address
     lockTime,
     target_address, 
     utxos, 
-    bitcoin.ECPair.fromWIF(privkey, settings.network)
+    bitcoin.ECPair.fromPrivateKey(bip32.fromBase58(privkey, settings.network).privateKey, settings.network)
   );
   // broadcast tx
   result = await commom_btc.broadcast(rawtx);
@@ -220,7 +221,7 @@ exports.broadcast_tx_by_costomer = async function(redeemScript, secret, target_a
     Buffer.from(secret), 
     target_address, 
     utxos, 
-    bitcoin.ECPair.fromWIF(privkey, settings.network)
+    bitcoin.ECPair.fromPrivateKey(bip32.fromBase58(privkey, settings.network).privateKey, settings.network)
   );
   // broadcast tx
   result = await commom_btc.broadcast(rawtx);
@@ -355,12 +356,12 @@ function verify_redeem(redeemScript) {
 exports.vefiry_address = function(address, redeemScript, privkey_customer) {
 
   var result = {result:false, message:''};
-  pubkey_customer = bitcoin.ECPair.fromWIF(privkey_customer, settings.network).publicKey.toString('hex').toUpperCase();
+  pubkey_customer = bitcoin.ECPair.fromPrivateKey(bip32.fromBase58(privkey_customer, settings.network).privateKey, settings.network).publicKey.toString('hex').toUpperCase();
 
   // vefiry redeem script
 
   let result_redeem = verify_redeem(redeemScript);
-  if(result_redeem.result == true && result_redeem.pubkey == pubkey){
+  if(result_redeem.result == true && result_redeem.pubkey == pubkey_customer){
     result.result = true;
 
     // verify address
