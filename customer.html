@@ -16,7 +16,10 @@
           <div class="table-responsive">
             <table class="table">
               <tr>
-                <th>your private key</th><td><textarea id="privkey_customer" name="privkey_customer" class="form-control">tprv8eNvJamRDCCHVtnMZ8omn46uZVNMgP7p6TegjutLuzFwidHf4kPX1AsfSCsix9Cx8Ewxnr4q5UYU3kTnmpGMe29oVBF9o8bvEm39isFQiwB</textarea></td>
+                <th>your private key</th><td><input type="text" id="privkey_customer" name="privkey_customer" class="form-control" onkeyup="gen_pubkey()" value='tprv8eNvJamRDCCHVtnMZ8omn46uZVNMgP7p6TegjutLuzFwidHf4kPX1AsfSCsix9Cx8Ewxnr4q5UYU3kTnmpGMe29oVBF9o8bvEm39isFQiwB'></td>
+              </tr>
+              <tr>
+                <th>your public key</th><td><label id="pubkey_customer"></label></td>
               </tr>
             </table>
           </div>

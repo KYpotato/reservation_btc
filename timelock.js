@@ -114,7 +114,7 @@ exports.gen_timelock_address = function(privkey_restaurant, lockTime, secret, pu
   
   // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
   // secret = gen_secret();
-  pubkey_restaurant = bitcoin.ECPair.fromPrivateKey(bip32.fromBase58(privkey_restaurant, settings.network).privateKey, settings.network).publicKey;
+  pubkey_restaurant = gen_publickey(privkey_restaurant);
   lockTime = bip65.encode({utc: lockTime});
   const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), pubkey_restaurant, lockTime, secret);
 
@@ -353,10 +353,14 @@ function verify_redeem(redeemScript) {
   return result;
 }
 
+exports.gen_publickey = function(privkey) {
+ return bitcoin.ECPair.fromPrivateKey(bip32.fromBase58(privkey, settings.network).privateKey, settings.network).publicKey.toString('hex').toUpperCase();
+}
+
 exports.vefiry_address = function(address, redeemScript, privkey_customer) {
 
   var result = {result:false, message:''};
-  pubkey_customer = bitcoin.ECPair.fromPrivateKey(bip32.fromBase58(privkey_customer, settings.network).privateKey, settings.network).publicKey.toString('hex').toUpperCase();
+  pubkey_customer = gen_publickey(privkey_customer);
 
   // vefiry redeem script
 

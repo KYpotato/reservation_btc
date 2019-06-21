@@ -2,6 +2,10 @@ const timelock = require('./timelock');
 
 window.verify = verify;
 window.send = send;
+window.gen_pubkey = gen_pubkey;
+window.onload = function() {
+  gen_pubkey();
+}
 
 async function verify() {
   try {
@@ -96,5 +100,14 @@ async function send() {
   } catch(error) {
     document.getElementById('result').innerText = 'error';
     alert(error);
+  }
+}
+
+async function gen_pubkey(){
+  let privkey_customer = document.getElementById('privkey_customer').value;
+  try{
+    document.getElementById('pubkey_customer').innerText = await timelock.gen_publickey(privkey_customer);
+  } catch (error) {
+    document.getElementById('pubkey_customer').innerText = 'invalid private key';
   }
 }
