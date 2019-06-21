@@ -2,6 +2,7 @@ const timelock = require('./timelock');
 
 window.gen_address = gen_address;
 window.send = send;
+window.gen_password = gen_password;
 
 function gen_address() {
   try {
@@ -52,4 +53,8 @@ async function send(){
     document.getElementById('result').innerText = 'error';
     alert(error);
   }
+}
+
+async function gen_password(){
+  document.getElementById('secret').innerText = Math.random().toString(32).substring(2);
 }
