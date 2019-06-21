@@ -48,8 +48,16 @@
         </table>
       </div>
       <button type="button" class="btn btn-primary" onclick='gen_address()'>generate address</button><br>
-      <br>address: <label id="generated_address"></label><br>
-      <br>address and redeem script: <br><span id="generated_redeem_script"></span><br>
+      <div class="table-responsive">
+        <table class="table">
+          <tr>
+            <th>address: </th><td><label id="generated_address"></label></td>
+          </tr>
+          <tr>
+          <th>address and redeem script: </th><td><br><span id="generated_redeem_script"></span></td>
+          </tr>
+        </table>
+      </div>
       <img id="address_qr" src="" style="visibility:hidden">
       </div>
       </div>
