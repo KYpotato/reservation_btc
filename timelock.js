@@ -114,9 +114,9 @@ exports.gen_timelock_address = function(privkey_restaurant, lockTime, secret, pu
   
   // const lockTime = bip65.encode({ utc: utcNow() - (3600 * 3) });
   // secret = gen_secret();
-  pubkey_restaurant = gen_publickey(privkey_restaurant);
+  pubkey_restaurant = module.exports.gen_publickey(privkey_restaurant);
   lockTime = bip65.encode({utc: lockTime});
-  const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), pubkey_restaurant, lockTime, secret);
+  const redeemScript = gen_timelock_script(Buffer.from(pubkey_customer, 'hex'), Buffer.from(pubkey_restaurant, 'hex'), lockTime, secret);
 
   let address = gen_address_from_redeem(redeemScript);
   console.log(redeemScript);
@@ -360,7 +360,7 @@ exports.gen_publickey = function(privkey) {
 exports.vefiry_address = function(address, redeemScript, privkey_customer) {
 
   var result = {result:false, message:''};
-  pubkey_customer = gen_publickey(privkey_customer);
+  pubkey_customer = module.exports.gen_publickey(privkey_customer);
 
   // vefiry redeem script
 
