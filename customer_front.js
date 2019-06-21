@@ -83,8 +83,13 @@ async function verify() {
 async function send() {
 
   try {
+    let redeem = document.getElementById('redeem_script_2').value;
+    if( redeem.indexOf('message=') != -1) {
+      redeem = redeem.substr(redeem.indexOf('message=') + 'message='.length);
+    }
+
     let result = await timelock.broadcast_tx_by_costomer(
-      document.getElementById('redeem_script_2').value,
+      redeem,
       document.getElementById('secret').value,
       document.getElementById('target_address').value,
       document.getElementById('privkey_customer').value

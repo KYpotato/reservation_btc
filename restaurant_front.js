@@ -38,8 +38,13 @@ function gen_address() {
 
 async function send(){
   try{
+    let redeem = document.getElementById('redeem_script').value;
+    if( redeem.indexOf('message=') != -1) {
+      redeem = redeem.substr(redeem.indexOf('message=') + 'message='.length);
+    }
+
     let result = await timelock.broadcast_tx_by_restaurant(
-      document.getElementById('redeem_script').value,
+      redeem,
       document.getElementById('target_address').value,
       document.getElementById('privkey_restaurant').value,
     );
