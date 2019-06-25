@@ -359,7 +359,7 @@ exports.gen_publickey = function(privkey) {
 
 exports.vefiry_address = function(address, redeemScript, privkey_customer) {
 
-  var result = {result:false, message:''};
+  var result = {result:false, message:'', locktime: 0};
   pubkey_customer = module.exports.gen_publickey(privkey_customer);
 
   // vefiry redeem script
@@ -367,6 +367,7 @@ exports.vefiry_address = function(address, redeemScript, privkey_customer) {
   let result_redeem = verify_redeem(redeemScript);
   if(result_redeem.result == true && result_redeem.pubkey == pubkey_customer){
     result.result = true;
+    result.locktime = parseInt(result_redeem.lockTime);
 
     // verify address
     let address_from_redeem = gen_address_from_redeem(Buffer.from(redeemScript, 'hex'));

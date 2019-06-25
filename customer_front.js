@@ -50,8 +50,10 @@ async function verify() {
       document.getElementById('verified_result').innerText = 'success';
       document.getElementById('div_deposit_address').style.visibility = "visible";
       document.getElementById('div_deposit_amount').style.visibility = "visible";
+      document.getElementById('div_locktime').style.visibility = "visible";
       document.getElementById('deposit_address').innerText = address;
       document.getElementById('deposit_amount').innerText = amount;
+      document.getElementById('locktime').innerText = result.locktime;
       document.getElementById('address_qr').src = 
         "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chco=000000&chl=bitcoin:" + address +
         "?amount=" + amount;
@@ -60,8 +62,10 @@ async function verify() {
     else {
       document.getElementById('div_deposit_address').style.visibility = "hidden";
       document.getElementById('div_deposit_amount').style.visibility = "hidden";
+      document.getElementById('div_locktime').style.visibility = "hidden";
       document.getElementById('deposit_address').innerText = '';
       document.getElementById('deposit_amount').innerText = '';
+      document.getElementById('locktime').innerText = '';
       document.getElementById('address_qr').src = '';
       document.getElementById('address_qr').style.visibility = "hidden";
       document.getElementById('verified_result').innerText = result.message;
@@ -71,8 +75,10 @@ async function verify() {
   } catch (error) {
     document.getElementById('div_deposit_address').style.visibility = "hidden";
     document.getElementById('div_deposit_amount').style.visibility = "hidden";
+    document.getElementById('div_locktime').style.visibility = "hidden";
     document.getElementById('deposit_address').innerText = '';
     document.getElementById('deposit_amount').innerText = '';
+    document.getElementById('locktime').innerText = '';
     document.getElementById('address_qr').src = '';
     document.getElementById('address_qr').style.visibility = "hidden";
     document.getElementById('verified_result').innerText = 'error';
