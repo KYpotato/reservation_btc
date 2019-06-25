@@ -13,7 +13,7 @@ npmインストール
 1.客  
  customer.htmlを開く  
  　秘密鍵を入力する  
-  (https://github.com/KYpotato/reservation_btc/blob/images/0_customer_privkey.png)
+  ![画像1](https://github.com/KYpotato/reservation_btc/blob/images/0_customer_privkey.png)  
  　公開鍵を生成する  
  メールやメッセージアプリ  
  　公開鍵（と予約の日時）を店に伝える  
