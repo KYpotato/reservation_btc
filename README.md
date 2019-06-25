@@ -13,19 +13,23 @@ npmインストール
 1.客  
  customer.htmlを開く  
  　秘密鍵を入力する  
-  ![画像1](https://github.com/KYpotato/reservation_btc/blob/images/0_customer_privkey.png)  
  　公開鍵を生成する  
- メールやメッセージアプリ  
+  ![画像1](https://github.com/KYpotato/reservation_btc/blob/images/0_customer_privkey.png)  
+ メールやメッセージアプリを使って  
  　公開鍵（と予約の日時）を店に伝える  
   
 2.店  
  restaurant.htmlを開く（Chrome推奨）  
  　秘密鍵を入力する  
- 　予約の日時を元に、デポジット回収の日付を入力する  
- 　客の公開鍵を入力する  
+  ![画像2](https://github.com/KYpotato/reservation_btc/blob/images/0_restaurant_privkey.png)  
+ 　予約の日時を元に、デポジット回収の日付を入力する    
  　デポジットを取り出すためのパスワードを入力する  
+　 デポジットの金額を入力する
+ 　客の公開鍵を入力する
+  ![画像3](https://github.com/KYpotato/reservation_btc/blob/images/1_restaurant_gen_address.png)  
  　アドレスを生成する  
- メールやメッセージアプリ  
+  ![画像4](https://github.com/KYpotato/reservation_btc/blob/images/1_restaurant_gen_address_result.png)  
+ メールやメッセージアプリを使って  
  　アドレス（redeem scriptを含む）を客に伝える  
   
 3.客  
@@ -33,6 +37,7 @@ npmインストール
  　秘密鍵を入力するする  
  　店から受け取ったアドレスを入力する  
  　アドレスとredeem scriptを検証する  
+  ![画像5](https://github.com/KYpotato/reservation_btc/blob/images/2_customer_verify.png)  
  BTCウォレット  
  　店から受け取ったアドレスにBTCを送金する  
   
@@ -50,12 +55,14 @@ npmインストール
  　店から受け取ったパスワードを入力する  
  　デポジット取り出し先のアドレスを入力する  
  　デポジットを取り出す  
+  ![画像6](https://github.com/KYpotato/reservation_btc/blob/images/3_customer_refund.png)  
 　  
 ・客が来店しなかった（無断キャンセル）場合  
 5.店  
  restaurant.html（Chrome推奨）  
  　デポジット回収先のアドレスを入力する  
  　デポジット回収の日付を過ぎてからデポジットを回収する  
+  ![画像7](https://github.com/KYpotato/reservation_btc/blob/images/3_restaurant_collect.png)  
   
 ## install
 `git clone https://github.com/KYpotato/reservation_btc.git`  
