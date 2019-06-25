@@ -57,7 +57,7 @@ npmインストール
  　デポジット回収の日付を過ぎてからデポジットを回収する  
   
 ## install
-`git clone`  
+`git clone https://github.com/KYpotato/reservation_btc.git`  
 `npm install`  
 `browserify ./restaurant_front.js -o ./restaurant.js`  
 `browserify ./customer_front.js -o ./customer.js`  
