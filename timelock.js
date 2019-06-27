@@ -367,7 +367,7 @@ exports.vefiry_address = function(address, redeemScript, privkey_customer) {
   let result_redeem = verify_redeem(redeemScript);
   if(result_redeem.result == true && result_redeem.pubkey == pubkey_customer){
     result.result = true;
-    result.locktime = parseInt(result_redeem.lockTime);
+    result.locktime = new Date(parseInt(result_redeem.lockTime, 16) * 1000);
 
     // verify address
     let address_from_redeem = gen_address_from_redeem(Buffer.from(redeemScript, 'hex'));
